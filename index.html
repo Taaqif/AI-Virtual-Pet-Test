@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <style media="screen">
+    .main{
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    textarea{
+      width: 100%;
+    height: 200px;
+    }
+    canvas{
+      max-height: 400px
+    }
+      .progress {
+        margin: 20px;
+        width: 100px;
+        height: 100px;
+        position: relative;
+      }
+      .stats{
+        display: flex;
+        flex-direction: row;
+      }
+
+  </style>
+  <script src="js/lib/state-machine.min.js"></script>
+  <script src="js/lib/progressbar.min.js"></script>
+  <script src="js/lib/random.min.js"></script>
+  <script src="js/lib/Chart.min.js"></script>
+  <script src="js/petLogic.js"></script>
+  <script src="js/petStates.js"></script>
+
+</head>
+
+<body>
+
+  <div class="main">
+
+    <h1>AI Virtual Pet</h1>
+    <p>
+      Name: <span id="Name"></span> <br />
+      <!-- Age: <span id="Age"></span><br />
+      Stats: <br />
+      Health: <span id="Health"></span> <br />
+      Fatigue: <span id="Fatigue"></span> <br />
+      Hunger: <span id="Hunger"></span> <br />
+      Personality: <span id="Personality"></span> <br /> -->
+
+    </p>
+    <div class="stats">
+      <div id="happiness" class="progress">Happiness</div>
+      <div id="health" class="progress">Health</div>
+      <div id="fatigue" class="progress">Fatigue</div>
+      <div id="hunger" class="progress">Hunger</div>
+
+    </div>
+
+
+    <div id="controls">
+      <button onclick='pet.play()'>Play</button>
+      <button onclick='pet.feed()'>Feed</button>
+      <button onclick='pet.sleep()'>Sleep</button>
+      <button onclick='pet.walk()'>Walk</button>
+    </div>
+    <br>
+    <p>
+      <input id = "speed" style="display:none" type=range min=1 max=9 value=1 step=1 ><br />
+      <input type="checkbox" id="auto" value="auto"> Auto states<br>
+    </p>
+    <span>This is where I will communicate with you</span>
+    <textarea id="log" readonly="readonly"></textarea>
+    <script>
+
+
+    // add some data every so often
+
+
+
+        pet = new petFSM("AI TEST");
+
+        var data_health = [];
+        var data_hunger = [];
+        var data_happiness = [];
+        var data_fatigue = [];
+        var data_times = [];
+        var i=0;
+        setTimeout(function getData() {
+          data_times.push(i);
+
+          i++;
+          data_health.push(pet.health);
+          data_hunger.push(pet.hunger);
+          data_happiness.push(pet.happiness);
+          data_fatigue.push(pet.fatigue);
+          Generate();
+          // console.log(data_health);
+        setTimeout(getData, 15000);
+      }, 10);
+    function Generate(){
+      var ctx = document.getElementById("myChart");
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: data_times,
+            datasets: [{
+                label: 'Hapiness',
+                 fill: false,
+                 pointRadius: 3,
+                 borderColor: 'rgba(255,99,132,1)',
+                data: data_happiness
+            },{
+              label: 'Health',
+               fill: false,
+               pointRadius: 3,
+               borderColor: 'rgba(54, 162, 235, 1)',
+              data: data_health
+            },{
+              label: 'Hunger',
+               fill: false,
+               pointRadius: 3,
+               borderColor: 'rgba(255, 206, 86, 1)',
+              data: data_hunger
+            },{
+              label: 'Fatigue',
+               fill: false,
+               pointRadius: 3,
+               borderColor: 'rgba(75, 192, 192, 1)',
+              data: data_fatigue
+            }
+          ]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true
+                    },
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'Percentage'
+                    }
+                }],
+                xAxes: [{
+                    scaleLabel: {
+                      display: true,
+                      labelString: 'Time Scale: 1/4 minute'
+                    }
+                }]
+            },
+            scaleShowVerticalLines: false,
+            scaleLineColor : "black",
+            maintainAspectRatio: false,
+
+        }
+    });
+    }
+      </script>
+    <button type="button" onclick="Generate();">Generate stat graph</button>
+    <h1>Live Results</h1>
+    <canvas id="myChart" width="400" height="400"></canvas>
+
+</div>
+
+
+</body>
+</html>
